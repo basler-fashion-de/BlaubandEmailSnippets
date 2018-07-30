@@ -1,0 +1,24 @@
+.customSnippetsData {
+    display: none;
+}
+
+.customSnippetsDataWrapper {
+    max-height: 330px;
+    overflow-y: scroll;
+}
+
+.customSnippetsDataWrapper > :first-child {
+    display: block;
+}
+
+.snippetRow {
+    padding: 10px;
+    background-color: #F4F4F4;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.snippetName {
+    font-weight: bold;
+    margin-top: 5px;
+}
