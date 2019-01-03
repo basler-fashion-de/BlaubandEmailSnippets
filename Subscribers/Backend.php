@@ -61,8 +61,7 @@ class Backend implements SubscriberInterface
         $view->assign('customSnippets', $customSnippets);
 
         $view->addTemplateDir($this->pluginDirectory . '/Resources/views');
-        $view->extendsTemplate('backend/blauband_email/send.tpl');
-        $view->extendsTemplate('backend/blauband_common/header.tpl');
+//        $view->extendsTemplate('backend/blauband_email/send.tpl');
     }
 
 

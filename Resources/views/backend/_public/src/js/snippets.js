@@ -1,18 +1,25 @@
 $(function () {
-  $('#customSnippets').on('selectmenuchange', function () {
+  var textarea = getTextarea();
+
+  $('#customSnippets').off('selectmenuchange.blauband');
+  $('#customSnippets').on('selectmenuchange.blauband', function () {
     var $me = $(this)
     var dataId = 'customSnippetsData' + $me.val()
     $('.customSnippetsData').hide()
     $('#' + dataId).show()
   })
 
-  $('.snippetRow').on('click', function () {
+  $('.snippetRow').off('click.blauband');
+  $('.snippetRow').on('click.blauband', function () {
     insertInTextarea($(this).find('.snippet').text());
   })
 
+  $(textarea).on('input', function () {
+    //auto vervollständigung
+  })
+
   function insertInTextarea (value) {
-    var htmlPlain = $('#selectedTab').val();
-    var textarea = document.getElementById(htmlPlain+'MailContent');
+    var textarea = getTextarea()
     value = value.replace(new RegExp("\\\\n","gm"),"\n");
 
     if (document.selection) {
@@ -34,5 +41,10 @@ $(function () {
       textarea.value += value
       textarea.focus()
     }
+  }
+
+  function getTextarea(){
+    var htmlPlain = $('#selectedTab').val();
+    return document.getElementById(htmlPlain+'MailContent');
   }
 })
