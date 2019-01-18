@@ -8,7 +8,7 @@ use Shopware\Models\Shop\Shop;
 
 class Backend implements SubscriberInterface
 {
-    private $customSnippetNamespace = 'blauband/mail_custom_snippets';
+    public static $customSnippetNamespace = 'blauband/mail_custom_snippets';
 
     /**  @var string */
     private $pluginDirectory;
@@ -19,16 +19,22 @@ class Backend implements SubscriberInterface
     /** @var \Enlight_Components_Snippet_Manager $snippets */
     private $snippets;
 
+    /** @var \Zend_Locale */
+    private $locale;
 
     /**
      * @param $pluginDirectory
      */
-    public function __construct($pluginDirectory, ModelManager $modelManager, \Enlight_Components_Snippet_Manager $snippets)
+    public function __construct(
+        $pluginDirectory,
+        ModelManager $modelManager,
+        \Enlight_Components_Snippet_Manager $snippets,
+        $container)
     {
         $this->pluginDirectory = $pluginDirectory;
         $this->modelManager = $modelManager;
         $this->snippets = $snippets;
-
+        $this->locale = $container->get('locale');
 
     }
 
@@ -50,18 +56,30 @@ class Backend implements SubscriberInterface
         $repository = $this->modelManager->getRepository(Shop::class);
         $shops = $repository->findAll();
         $customSnippets = [];
+
         foreach ($shops as $shop) {
             $this->snippets->setShop($shop);
-            $name = $shop->getName() . ' / ' . $shop->getLocale()->getLocale();
-            $data = $this->snippets->getNamespace($this->customSnippetNamespace)->toArray();
-            $customSnippets[$shop->getId()]['name'] = $name;
-            $customSnippets[$shop->getId()]['data'] = $data;
+            $data = $this->snippets->getNamespace(self::$customSnippetNamespace)->toArray();
+
+            foreach ($data as $name => $value) {
+                $customSnippets[$name][$shop->getId()]['value'] = $value;
+                $customSnippets[$name][$shop->getId()]['shopName'] = $shop->getName();
+                $customSnippets[$name][$shop->getId()]['locale'] = $shop->getLocale()->getLocale();
+                $customSnippets[$name][$shop->getId()]['lang'] = strtolower(explode('_', $shop->getLocale()->getLocale())[1]);
+
+            }
+
+            if (
+                $shop->getLocale()->getLocale() == $this->locale->toString() &&
+                empty($view->getAssign('authShopId'))
+            ) {
+                $view->assign('authShopId', $shop->getId());
+            }
         }
 
         $view->assign('customSnippets', $customSnippets);
 
         $view->addTemplateDir($this->pluginDirectory . '/Resources/views');
-//        $view->extendsTemplate('backend/blauband_email/send.tpl');
     }
 
 

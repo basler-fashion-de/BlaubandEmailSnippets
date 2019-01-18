@@ -8,6 +8,7 @@
             <argument>%blauband_email_snippets.plugin_dir%</argument>
             <argument type="service" id="models"/>
             <argument type="service" id="snippets"/>
+            <argument type="service" id="service_container"/>
             <tag name="shopware.event_subscriber"/>
         </service>
 

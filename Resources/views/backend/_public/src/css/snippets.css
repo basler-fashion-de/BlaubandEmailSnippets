@@ -15,10 +15,37 @@
     padding: 10px;
     background-color: #F4F4F4;
     font-size: 12px;
+    border-bottom: 3px solid #f9fafa
+}
+
+.snippetEdit,
+.snippetName,
+.snippetLocale {
+    float: left;
+    margin:2px 5px 5px 0px;
+}
+
+.snippetEdit{
+    margin:0px 15px 5px 10px;
     cursor: pointer;
 }
 
 .snippetName {
     font-weight: bold;
-    margin-top: 5px;
+}
+
+.snippetLocale {
+    cursor: pointer;
+}
+
+.snippet {
+    clear: both;
+}
+
+.snippetLanguageValue {
+    display: none;
+}
+
+.snippetTextarea {
+    margin-bottom: 10px;
 }
