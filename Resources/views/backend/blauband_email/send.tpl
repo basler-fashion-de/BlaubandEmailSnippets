@@ -7,6 +7,7 @@
 
         <div class="customSnippetsDataWrapper">
             <div class="customSnippetsData" id="customSnippetsData{$id}">
+                <button type="button" class="saveAsSnippetBtn">{s namespace="blauband/mail" name="saveAsSnippet"}{/s}</button>
                 {foreach $customSnippets as $name => $content}
                     <div class="snippetRow">
                         <div class="snippetName">{$name}</div>

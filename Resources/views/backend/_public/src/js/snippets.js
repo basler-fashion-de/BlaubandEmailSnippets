@@ -1,3 +1,5 @@
+var blaubandTempText = '';
+
 $(function () {
   var textarea = getTextarea()
   registerSnippetEvents()
@@ -5,7 +7,9 @@ $(function () {
 
 function registerSnippetEvents () {
   registerSaveSnippetEvent()
+  registerSaveAsSnippet()
   registerDragAndDrop()
+  registerSnippetEdit()
 }
 
 function insertInTextarea (value) {
@@ -42,6 +46,10 @@ function openSnippets (snippetName) {
   openNewIframe('Snippets', 'BlaubandEmailSnippets', 'index', {'snippetName': snippetName})
 }
 
+function createSnippets (snippetValue) {
+  openNewIframe('Snippets', 'BlaubandEmailSnippets', 'index', {'snippetValue': snippetValue})
+}
+
 function registerSaveSnippetEvent () {
   $(plugin_selector + ' #save-button').on('click', function () {
     var url = $(this).data('url')
@@ -58,8 +66,8 @@ function registerSaveSnippetEvent () {
         if (response.success) {
           alert(saveSuccessSnippet)
 
-          parent[parent.length-2].location.reload();
-          postMessageApi.window.destroy();
+          parent[parent.length - 2].location.reload()
+          postMessageApi.window.destroy()
         } else {
           showErrorPanel(response.message)
         }
@@ -68,12 +76,35 @@ function registerSaveSnippetEvent () {
   })
 }
 
+function registerSaveAsSnippet () {
+  $('.saveAsSnippetBtn').on('mousedown', function () {
+    var text = "";
+
+    if (window.getSelection) {
+      text = window.getSelection().toString();
+    } else if (document.selection && document.selection.type != "Control") {
+      text = document.selection.createRange().text;
+    }
+
+    blaubandTempText = text;
+  } )
+
+  $('.saveAsSnippetBtn').off('click.blauband')
+  $('.saveAsSnippetBtn').on('click.blauband', function () {
+    if(blaubandTempText != ''){
+      createSnippets(blaubandTempText)
+    }
+  })
+}
+
 function registerDragAndDrop () {
   $('.snippetLanguage').off('click.blauband')
   $('.snippetLanguage').on('click.blauband', function () {
     insertInTextarea($(this).find('.snippetLanguageValue').text())
   })
+}
 
+function registerSnippetEdit () {
   $('.snippetEdit').off('click.blauband')
   $('.snippetEdit').on('click.blauband', function () {
     openSnippets($(this).data('snippetname'))

@@ -41,24 +41,48 @@ class Shopware_Controllers_Backend_BlaubandEmailSnippets extends \Enlight_Contro
     public function indexAction()
     {
         $snippetName = $this->request->getParam('snippetName');
+        $snippetValue = $this->request->getParam('snippetValue');
 
         $snippets = [];
 
-        /** @var Shop $shop */
-        foreach ($this->shops as $shop) {
-            $this->snippetsManager->setShop($shop);
-            $value = $this->snippetsManager
-                ->getNamespace(\BlaubandEmailSnippets\Subscribers\Backend::$customSnippetNamespace)
-                ->get($snippetName);
+        if(!empty($snippetName)){
+            /** @var Shop $shop */
+            foreach ($this->shops as $shop) {
+                $this->snippetsManager->setShop($shop);
+                $value = $this->snippetsManager
+                    ->getNamespace(\BlaubandEmailSnippets\Subscribers\Backend::$customSnippetNamespace)
+                    ->get($snippetName);
 
-            $snippets[$shop->getId()]['shopName'] = $shop->getName();
-            $snippets[$shop->getId()]['shopLocale'] = $shop->getLocale()->getLocale();
-            $snippets[$shop->getId()]['value'] = $value;
+                $snippets[$shop->getId()]['shopName'] = $shop->getName();
+                $snippets[$shop->getId()]['shopLocale'] = $shop->getLocale()->getLocale();
+                $snippets[$shop->getId()]['value'] = $value;
+            }
+
+            $this->view->assign('snippets', $snippets);
+            $this->view->assign('snippetName', $snippetName);
+            $this->view->assign('saveSuccess', $this->request->getParam('saveSuccess'));
+            return;
         }
 
-        $this->view->assign('snippets', $snippets);
-        $this->view->assign('snippetName', $snippetName);
-        $this->view->assign('saveSuccess', $this->request->getParam('saveSuccess'));
+        if(!empty($snippetValue)){
+            foreach ($this->shops as $shop) {
+                $this->snippetsManager->setShop($shop);
+
+                $snippets[$shop->getId()]['shopName'] = $shop->getName();
+                $snippets[$shop->getId()]['shopLocale'] = $shop->getLocale()->getLocale();
+                $snippets[$shop->getId()]['value'] = $snippetValue;
+            }
+
+            $snippetName = ucwords($snippetValue);
+            $snippetName = str_replace(' ', '', $snippetName);
+            $snippetName = substr($snippetName, 0, 15);
+
+            $this->view->assign('snippets', $snippets);
+            $this->view->assign('snippetName', $snippetName);
+            $this->view->assign('saveSuccess', $this->request->getParam('saveSuccess'));
+            return;
+        }
+
     }
 
     public function saveAction()
