@@ -28,6 +28,9 @@
         </button>
 
         <input type="hidden" name="snippetName" id="snippetName" value="{$snippetName}">
+
+        <label for="newSnippetName">{s namespace="blauband/mail" name="name"}Name{/s}</label>
+        <input type="text" name="newSnippetName" id="newSnippetName" value="{$snippetName}">
         {foreach $snippets as $shopId => $snippet}
             <h4>{$snippet.shopName} - {$snippet.shopLocale}</h4>
             <textarea class="snippetTextarea" id="snippet-{$shopId}" name="snippet-{$shopId}">

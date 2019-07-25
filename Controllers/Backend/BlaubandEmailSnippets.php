@@ -45,7 +45,7 @@ class Shopware_Controllers_Backend_BlaubandEmailSnippets extends \Enlight_Contro
 
         $snippets = [];
 
-        if(!empty($snippetName)){
+        if (!empty($snippetName)) {
             /** @var Shop $shop */
             foreach ($this->shops as $shop) {
                 $this->snippetsManager->setShop($shop);
@@ -64,7 +64,7 @@ class Shopware_Controllers_Backend_BlaubandEmailSnippets extends \Enlight_Contro
             return;
         }
 
-        if(!empty($snippetValue)){
+        if (!empty($snippetValue)) {
             foreach ($this->shops as $shop) {
                 $this->snippetsManager->setShop($shop);
 
@@ -87,8 +87,21 @@ class Shopware_Controllers_Backend_BlaubandEmailSnippets extends \Enlight_Contro
 
     public function saveAction()
     {
+        $this->Front()->Plugins()->ViewRenderer()->setNoRender();
+
         $params = $this->request->getParams();
         $snippetName = $params['snippetName'];
+        $newSnippetName = $params['newSnippetName'];
+        $snippetNamespace = \BlaubandEmailSnippets\Subscribers\Backend::$customSnippetNamespace;
+        $snippetRepository = $this->modelManager->getRepository(Snippet::class);
+
+        try {
+            $this->validateSave($params);
+        } catch (Exception $exception) {
+            $this->Response()->setBody(json_encode(['success' => false, 'message' => $exception->getMessage()]));
+            $this->Response()->setHeader('Content-type', 'application/json', true);
+            return;
+        }
 
         /** @var Shop $shop */
         foreach ($this->shops as $shop) {
@@ -97,9 +110,7 @@ class Shopware_Controllers_Backend_BlaubandEmailSnippets extends \Enlight_Contro
             }
 
             $value = $params['snippet-' . $shop->getId()];
-            $snippetNamespace = \BlaubandEmailSnippets\Subscribers\Backend::$customSnippetNamespace;
 
-            $snippetRepository = $this->modelManager->getRepository(Snippet::class);
             $snippet = $snippetRepository->findOneBy(
                 [
                     'shopId' => $shop->getId(),
@@ -109,24 +120,44 @@ class Shopware_Controllers_Backend_BlaubandEmailSnippets extends \Enlight_Contro
                 ]
             );
 
-            if(empty($snippet)){
+            if (empty($snippet)) {
                 $snippet = new Snippet();
                 $snippet->setShopId($shop->getId());
                 $snippet->setLocaleId($shop->getLocale()->getId());
                 $snippet->setNamespace($snippetNamespace);
-                $snippet->setName($snippetName);
+                $snippet->setName($newSnippetName);
 
                 $this->modelManager->persist($snippet);
             }
 
             $snippet->setValue($value);
+            $snippet->setName($newSnippetName);
             $snippet->setUpdated();
         }
 
         $this->modelManager->flush();
 
-        $this->Front()->Plugins()->ViewRenderer()->setNoRender();
         $this->Response()->setBody(json_encode(['success' => true]));
         $this->Response()->setHeader('Content-type', 'application/json', true);
+    }
+
+    private function validateSave($params)
+    {
+        $newSnippetName = $params['newSnippetName'];
+        $snippetNamespace = \BlaubandEmailSnippets\Subscribers\Backend::$customSnippetNamespace;
+        $snippetRepository = $this->modelManager->getRepository(Snippet::class);
+
+        $snippet = $snippetRepository->findOneBy(
+            [
+                'namespace' => $snippetNamespace,
+                'name' => $newSnippetName
+            ]
+        );
+
+        if(!empty($snippet)){
+            throw new Exception($newSnippetName.' '. $this->snippetsManager
+                    ->getNamespace('blauband/mail')
+                    ->get('errorAlreadyExists'));
+        }
     }
 }
