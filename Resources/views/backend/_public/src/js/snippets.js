@@ -1,4 +1,4 @@
-var blaubandTempText = '';
+var blaubandTempText = ''
 
 $(function () {
   var textarea = getTextarea()
@@ -10,6 +10,7 @@ function registerSnippetEvents () {
   registerSaveAsSnippet()
   registerDragAndDrop()
   registerSnippetEdit()
+  registerDeleteSnippet()
 }
 
 function insertInTextarea (value) {
@@ -77,23 +78,48 @@ function registerSaveSnippetEvent () {
 }
 
 function registerSaveAsSnippet () {
-  $('.saveAsSnippetBtn').on('mousedown', function () {
-    var text = "";
+  $(plugin_selector + ' .saveAsSnippetBtn').on('mousedown', function () {
+    var text = ''
 
     if (window.getSelection) {
-      text = window.getSelection().toString();
-    } else if (document.selection && document.selection.type != "Control") {
-      text = document.selection.createRange().text;
+      text = window.getSelection().toString()
+    } else if (document.selection && document.selection.type != 'Control') {
+      text = document.selection.createRange().text
     }
 
-    blaubandTempText = text;
-  } )
+    blaubandTempText = text
+  })
 
   $('.saveAsSnippetBtn').off('click.blauband')
   $('.saveAsSnippetBtn').on('click.blauband', function () {
-    if(blaubandTempText != ''){
+    if (blaubandTempText != '') {
       createSnippets(blaubandTempText)
     }
+  })
+}
+
+function registerDeleteSnippet () {
+  $(plugin_selector + ' .snippetDelete').on('click.blauband', function () {
+    var url = $(this).data('url')
+    var snippetName = $(this).data('snippetname')
+    var me = this;
+
+    $.ajax({
+      type: 'post',
+      url: url,
+      data: {snippetName: snippetName},
+      success: function (response) {
+        hideInfoPanel()
+        hideErrorPanel()
+
+        if (response.success) {
+          alert(deleteSuccessSnippet)
+          parent[parent.length - 1].location.reload()
+        } else {
+          showErrorPanel(response.message)
+        }
+      }
+    })
   })
 }
 

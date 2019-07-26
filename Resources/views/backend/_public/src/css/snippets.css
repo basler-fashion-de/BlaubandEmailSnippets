@@ -22,11 +22,12 @@
 .snippetName,
 .snippetLocale {
     float: left;
-    margin:2px 5px 5px 0px;
+    margin:2px 5px 5px 0;
 }
 
-.snippetEdit{
-    margin:0px 15px 5px 10px;
+.snippetEdit,
+.snippetDelete{
+    margin:0 15px 5px 10px;
     cursor: pointer;
 }
 

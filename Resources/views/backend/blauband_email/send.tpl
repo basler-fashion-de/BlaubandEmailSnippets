@@ -1,5 +1,13 @@
 {extends file="parent:backend/blauband_email/send.tpl"}
 
+{block name="header"}
+    {$smarty.block.parent}
+
+    <script>
+      var deleteSuccessSnippet = '{s namespace="blauband/mail" name="deleteSuccess"}{/s}';
+    </script>
+{/block}
+
 {block name="mailContentWrapperAdditional"}
     {$smarty.block.parent}
     <div id="mailCustomSnippets">
@@ -24,6 +32,10 @@
 
                         <div class="snippetEdit" data-snippetname="{$name}">
                             <img src="{link file="backend/_public/src/icons/pencil.png"}"/>
+                        </div>
+
+                        <div class="snippetDelete" data-snippetname="{$name}" data-url="{url controller="BlaubandEmailSnippets" action="delete"}">
+                            <img src="{link file="backend/_public/src/icons/delete.png"}"/>
                         </div>
 
                         {foreach $content as $shopId => $data}

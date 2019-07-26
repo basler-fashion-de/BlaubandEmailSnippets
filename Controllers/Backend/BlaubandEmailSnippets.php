@@ -21,6 +21,7 @@ class Shopware_Controllers_Backend_BlaubandEmailSnippets extends \Enlight_Contro
         return [
             'index',
             'save',
+            'delete',
         ];
     }
 
@@ -141,6 +142,30 @@ class Shopware_Controllers_Backend_BlaubandEmailSnippets extends \Enlight_Contro
         $this->Response()->setHeader('Content-type', 'application/json', true);
     }
 
+    public function deleteAction(){
+        $this->Front()->Plugins()->ViewRenderer()->setNoRender();
+
+        $params = $this->request->getParams();
+        $snippetName = $params['snippetName'];
+        $snippetNamespace = \BlaubandEmailSnippets\Subscribers\Backend::$customSnippetNamespace;
+        $snippetRepository = $this->modelManager->getRepository(Snippet::class);
+
+        $snippets = $snippetRepository->findBy(
+            [
+                'namespace' => $snippetNamespace,
+                'name' => $snippetName
+            ]
+        );
+        foreach ($snippets as $snippet){
+            $this->modelManager->remove($snippet);
+        }
+
+        $this->modelManager->flush();
+
+        $this->Response()->setBody(json_encode(['success' => true]));
+        $this->Response()->setHeader('Content-type', 'application/json', true);
+    }
+
     private function validateSave($params)
     {
         $newSnippetName = $params['newSnippetName'];
@@ -158,6 +183,13 @@ class Shopware_Controllers_Backend_BlaubandEmailSnippets extends \Enlight_Contro
             throw new Exception($newSnippetName.' '. $this->snippetsManager
                     ->getNamespace('blauband/mail')
                     ->get('errorAlreadyExists'));
+        }
+
+        if (preg_match('/[^A-Za-z0-9 ]/', $newSnippetName))
+        {
+            throw new Exception($newSnippetName.' '. $this->snippetsManager
+                    ->getNamespace('blauband/mail')
+                    ->get('noSpecialCharacter'));
         }
     }
 }
