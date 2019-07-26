@@ -12,10 +12,10 @@
     {$smarty.block.parent}
     <div id="mailCustomSnippets">
         <label>{s namespace="blauband/mail" name="mailSnippets"}{/s}</label>
+        <button type="button" class="saveAsSnippetBtn">{s namespace="blauband/mail" name="saveAsSnippet"}{/s}</button>
 
         <div class="customSnippetsDataWrapper">
             <div class="customSnippetsData" id="customSnippetsData{$id}">
-                <button type="button" class="saveAsSnippetBtn">{s namespace="blauband/mail" name="saveAsSnippet"}{/s}</button>
                 {foreach $customSnippets as $name => $content}
                     <div class="snippetRow">
                         <div class="snippetName">{$name}</div>
