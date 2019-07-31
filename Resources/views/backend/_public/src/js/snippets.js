@@ -100,26 +100,29 @@ function registerSaveAsSnippet () {
 
 function registerDeleteSnippet () {
   $(plugin_selector + ' .snippetDelete').on('click.blauband', function () {
-    var url = $(this).data('url')
-    var snippetName = $(this).data('snippetname')
-    var me = this;
 
-    $.ajax({
-      type: 'post',
-      url: url,
-      data: {snippetName: snippetName},
-      success: function (response) {
-        hideInfoPanel()
-        hideErrorPanel()
+    if (confirm(shouldDelete)) {
+      var url = $(this).data('url')
+      var snippetName = $(this).data('snippetname')
+      var me = this
 
-        if (response.success) {
-          alert(deleteSuccessSnippet)
-          parent[parent.length - 1].location.reload()
-        } else {
-          showErrorPanel(response.message)
+      $.ajax({
+        type: 'post',
+        url: url,
+        data: {snippetName: snippetName},
+        success: function (response) {
+          hideInfoPanel()
+          hideErrorPanel()
+
+          if (response.success) {
+            alert(deleteSuccessSnippet)
+            window.location.reload()
+          } else {
+            showErrorPanel(response.message)
+          }
         }
-      }
-    })
+      })
+    }
   })
 }
 

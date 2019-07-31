@@ -22,12 +22,12 @@
 .snippetName,
 .snippetLocale {
     float: left;
-    margin:2px 5px 5px 0;
+    margin: 2px 5px 5px 0;
 }
 
 .snippetEdit,
-.snippetDelete{
-    margin:0 15px 5px 10px;
+.snippetDelete {
+    margin: 2px 5px 0 10px;
     cursor: pointer;
 }
 
@@ -37,6 +37,10 @@
 
 .snippetLocale {
     cursor: pointer;
+}
+
+.snippetLocale img {
+    width: 24px;
 }
 
 .snippet {
@@ -49,4 +53,14 @@
 
 .snippetTextarea {
     margin-bottom: 10px;
+}
+
+.snippetEdit img,
+.snippetDelete img {
+    width: 16px;
+}
+
+.blauband--action-bar {
+    text-align: right;
+    margin: 5px 20px 30px 20px;
 }
